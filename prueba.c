@@ -4,6 +4,7 @@
 #include<time.h>
 
 int poblar (int *red, float p, int dim);
+int clasificar(int *red,int dim);
 int imprimir(int *red,int dim);
 
 int main(int argc,char** argv[])
@@ -16,6 +17,7 @@ int main(int argc,char** argv[])
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
 
   poblar(red, p, dim);                  //Usa la funcion poblar.
+  clasificar(red,dim);
   imprimir(red,dim);
   return 0;
 }
@@ -40,7 +42,49 @@ int poblar(int *red, float p, int dim)
   return 0;
 }
 
-int imprimir(int *red, int dim)         //Imprime una fila debajo de otra.
+int clasificar(int *red,int dim)
+{ int S1,S2,i,j;
+  int frag = 2;
+
+  if(*(red) == 1)
+  { *(red) = frag;
+    frag++;
+  }
+
+  for(i=1;i<dim;i++)
+  { if(*(red+i) == 1)
+    { *(red+i) = frag;
+      frag++;
+    }
+  }
+
+  for(i=1;i<dim;i++){
+    S2 = *(red+i-dim);
+    if(*(red+i*dim) == 1){
+      *(red+i*dim) = S2;
+    }
+  }
+
+  for(i=1;i<dim;i++)
+  { for(j=1;j<dim;j++)
+    { S1 = *(red+(i*dim+j)-1);
+      S2 = *(red+(i*dim+j)-dim);
+
+      if( *(red+(i*dim+j)) && !(S1*S2)) //Si algo falla, es por los negatios, puede que falten modulos.
+        {if(S1>S2)
+          {*(red+(i*dim+j)) = S1;
+          }
+         else
+         { *(red+(i*dim+j)) = S2;
+         }
+        }
+      //if( *(red+(i*n+j)) && (S1*S2))
+      }
+
+  }
+}
+
+int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
 { int i,j;
 
   for (i=0;i<dim;i++)
