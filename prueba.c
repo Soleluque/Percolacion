@@ -46,31 +46,41 @@ int clasificar(int *red,int dim)
 { int S1,S2,i,j;
   int frag = 2;
 
-  if(*(red) == 1)
+  if(*(red) == 1) //primer lugar
   { *(red) = frag;
     frag++;
   }
 
-  for(i=1;i<dim;i++)
-  { if(*(red+i) == 1)
-    { *(red+i) = frag;
+  for(i=1;i<dim;i++) //primera fila sin primer lugar
+  { S1= *(red+i-1);
+    if(*(red+i) == 1 && S1)
+    { *(red+i) = S1;
+    }
+    else
+    {
+      *(red+i)=frag;
       frag++;
     }
   }
 
-  for(i=1;i<dim;i++){
+  for(i=1;i<dim;i++){  //primera columna sin primer lugar
     S2 = *(red+i-dim);
-    if(*(red+i*dim) == 1){
+    if(*(red+i*dim) == 1 && S2){
       *(red+i*dim) = S2;
+    }
+    else
+    {
+      *(red+i*dim)=frag;
+      frag++;
     }
   }
 
-  for(i=1;i<dim;i++)
+  for(i=1;i<dim;i++) //todo el resto
   { for(j=1;j<dim;j++)
     { S1 = *(red+(i*dim+j)-1);
       S2 = *(red+(i*dim+j)-dim);
 
-      if( *(red+(i*dim+j)) && !(S1*S2)) //Si algo falla, es por los negatios, puede que falten modulos.
+      if( *(red+(i*dim+j)) && !(S1*S2)) // Si alguno de los dos es cero. Si algo falla, es por los negatios, puede que falten modulos.
         {if(S1>S2)
           {*(red+(i*dim+j)) = S1;
           }
@@ -78,10 +88,23 @@ int clasificar(int *red,int dim)
          { *(red+(i*dim+j)) = S2;
          }
         }
-      //if( *(red+(i*n+j)) && (S1*S2))
+      if( *(red+(i*dim+j)) && (S1*S2)) //Si los dos no son cero
+      {if (S1>S2)
+          *(red+(i*dim+j))=S2;
+      }
+      else
+      {
+          *(red+(i*dim+j)) = S1;
+      }
+      }
+      if ( *(red+(i*dim+j)) && !S1 && !S2) //los dos son cero
+      {
+        *(red+(i*dim+j))=frag;
+        frag++;
       }
 
   }
+  return 0;
 }
 
 int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
