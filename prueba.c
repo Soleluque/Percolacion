@@ -26,8 +26,9 @@ int main(int argc,char** argv[])
 
 
 int poblar(int *red, float p, int dim)
-{ float random;
-  int i;
+{
+  float random;
+  int i,j;
   srand(time(NULL));
 
 
@@ -38,6 +39,14 @@ int poblar(int *red, float p, int dim)
       if (random<p)
       *(red+i)=1;                       //Asigna como <lleno> si el valor aleatorio es menor.
     }
+
+    for (i=0;i<dim;i++)
+      {for (j=0;j<dim;j++)
+        {
+        printf("%d ", *(red+dim*i+j));
+        }
+      printf("\n");
+      }
 
   return 0;
 }
@@ -51,61 +60,82 @@ int clasificar(int *red,int dim)
     frag++;
   }
 
+
+  for(i=1;i<dim;i++)
+  {  //primera columna sin primer lugar
+    S2 = *(red+(i-dim));
+    if(*(red+(i*dim)) && S2)
+    {
+      *(red+(i*dim)) = S2;
+    }
+    if(*(red+(i*dim)) && !S2)
+    {
+      *(red+(i*dim))=frag;
+      frag++;
+    }
+  }
+
+
+
   for(i=1;i<dim;i++) //primera fila sin primer lugar
   { S1= *(red+i-1);
-    if(*(red+i) == 1 && S1)
+    if(*(red+i) && S1)
     { *(red+i) = S1;
     }
-    else
+    if(*(red+i) && !S1)
     {
       *(red+i)=frag;
       frag++;
     }
   }
 
-  for(i=1;i<dim;i++){  //primera columna sin primer lugar
-    S2 = *(red+i-dim);
-    if(*(red+i*dim) == 1 && S2){
-      *(red+i*dim) = S2;
-    }
-    else
-    {
-      *(red+i*dim)=frag;
-      frag++;
-    }
-  }
+
 
   for(i=1;i<dim;i++) //todo el resto
-  { for(j=1;j<dim;j++)
-    { S1 = *(red+(i*dim+j)-1);
-      S2 = *(red+(i*dim+j)-dim);
+  {
+    for(j=1;j<dim;j++)
+    {
+      S1 = *(red+(i-1)); //Acá antes teníamos un *red+(i*dim+j-1)...me parece que eso estaba mal
+      S2 = *(red+(i-dim)); //Acá antes teníamos un *red+(i*dim+j-dim)...me parece que eso estaba mal
 
-      if( *(red+(i*dim+j)) && !(S1*S2)) // Si alguno de los dos es cero. Si algo falla, es por los negatios, puede que falten modulos.
-        {if(S1>S2)
-          {*(red+(i*dim+j)) = S1;
+
+      if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos son 1 o cuando uno solo es 1. Los primeros dos if son si los dos son 1. Los otros dos si uno es 1.
+        {
+         if(S1 && S2 && (S1<S2)) //Los dos son 1 y S1 más chico
+         {
+            *(red+(i*dim+j)) = S1;
           }
-         else
-         { *(red+(i*dim+j)) = S2;
+         if (S1 && S2 &&(S2<S1)) //Los dos son 1 y S1 más grande
+         {
+           *(red+(i*dim+j)) = S2;
          }
-        }
-      if( *(red+(i*dim+j)) && (S1*S2)) //Si los dos no son cero
-      {if (S1>S2)
+
+         if ((!S1) && S2) //S1 es cero y S2 es 1
+        {
           *(red+(i*dim+j))=S2;
-      }
-      else
-      {
-          *(red+(i*dim+j)) = S1;
-      }
-      }
-      if ( *(red+(i*dim+j)) && !S1 && !S2) //los dos son cero
+
+        }
+
+        if (S1 && (!S2)) //S1 es 1 y S2 es cero
+       {
+         *(red+(i*dim+j))=S1;
+
+       }
+       }
+
+
+
+      if ( *(red+(i*dim+j)) && (!S1 && !S2)) //los dos son cero
       {
         *(red+(i*dim+j))=frag;
         frag++;
       }
-
+    }
+    return 0;
   }
-  return 0;
+
 }
+
 
 int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
 { int i,j;
