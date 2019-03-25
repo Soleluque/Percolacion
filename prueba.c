@@ -61,10 +61,6 @@ int clasificar(int *red,int dim)
     frag++;
   }
 
-
-
-
-
   for(i=1;i<dim;i++) //primera fila sin primer lugar
   { S1= *(red+i-1);
     if(*(red+i) && S1)
@@ -101,11 +97,11 @@ int clasificar(int *red,int dim)
 
       if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos son 1 o cuando uno solo es 1. Los primeros tres if son si los dos son 1. Los otros dos si uno es 1.
         {
-         if (S1 && S2 && (S1>S2)) //Los dos son 1 y S1 más grande
+         if (S1 && S2 && (S2<S1)) //Los dos son 1 y S1 más grande
           {
             *(red+(i*dim+j)) = S2;
           }
-         if (S1 && S2 && (S2>S1)) //Los dos son 1 y S2 más grande
+         if (S1 && S2 && (S1<S2)) //Los dos son 1 y S2 más grande
          {
            *(red+(i*dim+j)) = S1;
          }
@@ -114,23 +110,15 @@ int clasificar(int *red,int dim)
          {
            *(red+(i*dim+j)) = S2;
          }
-         }
-
-
-         if ((!S1) && S2) //S1 es cero y S2 es 1
+        if ((!S1) && S2) //S1 es cero y S2 es 1
         {
           *(red+(i*dim+j))=S2;
-
         }
-
         if (S1 && (!S2)) //S1 es 1 y S2 es cero
        {
          *(red+(i*dim+j))=S1;
-
        }
-
-
-
+       }
 
       if ( *(red+(i*dim+j)) && (!S1 && !S2)) //los dos son cero
       {
