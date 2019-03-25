@@ -40,7 +40,7 @@ int poblar(int *red, float p, int dim)
       *(red+i)=1;                       //Asigna como <lleno> si el valor aleatorio es menor.
     }
 
-    for (i=0;i<dim;i++)
+    for (i=0;i<dim;i++) // Imprimo la red para ver como quedo
       {for (j=0;j<dim;j++)
         {
         printf("%d ", *(red+dim*i+j));
@@ -52,28 +52,16 @@ int poblar(int *red, float p, int dim)
 }
 
 int clasificar(int *red,int dim)
-{ int S1,S2,i,j;
+{
+  int S1,S2,i,j;
   int frag = 2;
 
-  if(*(red) == 1) //primer lugar
+  if(*(red)) //primer lugar
   { *(red) = frag;
     frag++;
   }
 
 
-  for(i=1;i<dim;i++)
-  {  //primera columna sin primer lugar
-    S2 = *(red+(i-dim));
-    if(*(red+(i*dim)) && S2)
-    {
-      *(red+(i*dim)) = S2;
-    }
-    if(*(red+(i*dim)) && !S2)
-    {
-      *(red+(i*dim))=frag;
-      frag++;
-    }
-  }
 
 
 
@@ -89,26 +77,45 @@ int clasificar(int *red,int dim)
     }
   }
 
+  for(i=1;i<dim;i++)  //primera columna sin primer lugar
+  {
+    S2 = *(red+(i*dim-dim)); //ESTO. Aca teniamos un red+i-dim
+    if(*(red+(i*dim)) && S2)
+    {
+      *(red+(i*dim)) = S2;
+    }
+    if(*(red+(i*dim)) && !S2)
+    {
+      *(red+(i*dim))=frag;
+      frag++;
+    }
+  }
 
 
   for(i=1;i<dim;i++) //todo el resto
   {
     for(j=1;j<dim;j++)
     {
-      S1 = *(red+(i-1)); //Acá antes teníamos un *red+(i*dim+j-1)...me parece que eso estaba mal
-      S2 = *(red+(i-dim)); //Acá antes teníamos un *red+(i*dim+j-dim)...me parece que eso estaba mal
+      S1 = *(red+(i*dim+j-1));
+      S2 = *(red+(i*dim+j-dim));
 
-
-      if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos son 1 o cuando uno solo es 1. Los primeros dos if son si los dos son 1. Los otros dos si uno es 1.
+      if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos son 1 o cuando uno solo es 1. Los primeros tres if son si los dos son 1. Los otros dos si uno es 1.
         {
-         if(S1 && S2 && (S1<S2)) //Los dos son 1 y S1 más chico
-         {
-            *(red+(i*dim+j)) = S1;
+         if (S1 && S2 && (S1>S2)) //Los dos son 1 y S1 más grande
+          {
+            *(red+(i*dim+j)) = S2;
           }
-         if (S1 && S2 &&(S2<S1)) //Los dos son 1 y S1 más grande
+         if (S1 && S2 && (S2>S1)) //Los dos son 1 y S2 más grande
+         {
+           *(red+(i*dim+j)) = S1;
+         }
+
+         if (S1 && S2 && (S2=S1)) //Los dos son 1 y son iguales, elijo arbitrariamente S2
          {
            *(red+(i*dim+j)) = S2;
          }
+         }
+
 
          if ((!S1) && S2) //S1 es cero y S2 es 1
         {
@@ -121,7 +128,7 @@ int clasificar(int *red,int dim)
          *(red+(i*dim+j))=S1;
 
        }
-       }
+
 
 
 
@@ -131,8 +138,9 @@ int clasificar(int *red,int dim)
         frag++;
       }
     }
-    return 0;
+
   }
+  return 0;
 
 }
 
