@@ -27,8 +27,7 @@ int main(int argc,char*argv[])
 
 //Funciones secundarias:
 int poblar(int *red, float p, int dim)
-{
-  float random;
+{ float random;
   int i;
   srand(time(NULL));
 
@@ -46,35 +45,40 @@ int poblar(int *red, float p, int dim)
 
 
 int clasificar(int *red,int dim)
-{
-  int S1,S2,i,j;
-  int frag = 2;
+{ int S1,S2,i,j,f;
+  int *frag;
+
+  frag = malloc((dim*dim)/2);
+  *(frag) = 2;
+  f = 0;
 
   if(*(red)) //Primer lugar.
-  { *(red) = frag;
-    frag++;
+  { *(red) = *(frag);
+    f++;
+    *(frag+f)=*(frag)+1;
   }
 
   for(i=1;i<dim;i++) //Primera fila sin primer lugar.
   { S1= *(red+i-1);
     if(*(red+i) && S1)  //S1 es 1.
-    { *(red+i) = S1;
+    { *(red+i) = *(frag+f-1);
     }
     if(*(red+i) && !S1)  //S1 es 0.
-    { *(red+i)=frag;
-      frag++;
+    { *(red+i)=*(frag+f);
+      f++;
+      *(frag+f)=*(frag+f-1)+1;
     }
   }
 
   for(i=1;i<dim;i++)  //Primera columna sin primer lugar.
-  {
-    S2 = *(red+(i*dim-dim));
+  { S2 = *(red+(i*dim-dim));
     if(*(red+(i*dim)) && S2)  //S2 es 1.
-    { *(red+(i*dim)) = S2;
+    { *(red+(i*dim)) = *(frag);
     }
     if(*(red+(i*dim)) && !S2)  //S2 es 0.
-    { *(red+(i*dim))=frag;
-      frag++;
+    { *(red+(i*dim))=*(frag+f);
+      f++;
+      *(frag+f)=*(frag+f-1)+1;
     }
   }
 
@@ -104,8 +108,9 @@ int clasificar(int *red,int dim)
        }
 
       if ( *(red+(i*dim+j)) && (!S1 && !S2)) //los dos son cero.
-      { *(red+(i*dim+j))=frag;
-        frag++;
+      { *(red+(i*dim+j))=*(frag+f);
+        f++;
+        *(frag+f) = *(frag+f-1)+1;
       }
     }
 
