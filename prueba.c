@@ -1,7 +1,7 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<math.h>
-#include<time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 int poblar (int *red, float p, int dim);
 int clasificar(int *red,int dim);
