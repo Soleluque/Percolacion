@@ -24,6 +24,7 @@ int main(int argc,char*argv[])
   printf("\n");
   clasificar(red,dim);
   imprimir(red,dim);
+  printf("\n");
   percolacion(red, dim);
   free(red);
   return 0;
@@ -135,16 +136,8 @@ int clasificar(int *red,int dim)
       }
   }
 
-  /*for(i=0;i<dim*dim;i++)
-  { *(red+i) = *(historial+*(red+i));
-  }*/
-
-  /*for(i=0;i<=(dim*dim)/2;i++)
-  { printf("%d ", *(historial+i));
-  }
-  printf("\n");*/
-
   free(historial);
+
   return 0;
 
   }
@@ -177,25 +170,21 @@ int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
 }
 
 int percolacion(int *red, int dim)
-{ int i,j;
-  int *percolante_s,*percolante_i;
+{ int i,j,p;
 
-  percolante_s = malloc(dim);
-  percolante_i = malloc(dim);
-
-  for(i=0;i<dim;i++)
-  { *(percolante_s+i) = *(red+i);
-    *(percolante_i+i) = *(red+dim*dim+i);
-  }
+  p = 0;
 
   for(i=0;i<dim;i++)
   { for(j=0;j<dim;j++)
-    { if (*(percolante_s+i) == *(percolante_i+j) && *(percolante_s+i))
-      { printf("He percolado!");
+    { if (*(red+i) == *(red+(dim-1)*dim+j) && *(red+i))
+      { p = 1;
       }
     }
   }
 
-  return 0;
+  if(p==1)
+  {printf("Percola.\n");
+  }
 
+  return 0;
 }
