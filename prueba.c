@@ -17,12 +17,14 @@ int main(int argc,char** argv[])
   int *hist;
   int *p1;
   int *p2;
+  int *s;
 
 
   hist = malloc((dim*dim)/2);
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
   p1 = malloc(dim);
   p2 = malloc(dim);
+  s = malloc(dim);
   sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
 
@@ -35,6 +37,7 @@ int main(int argc,char** argv[])
   free(hist);
   free(p1);
   free(p2);
+  free(s);
 
 
   return 0;
@@ -261,16 +264,30 @@ return 0;
 
 int percolacion(int *red, int dim)
 { int i, j;
-  int *p1,*p2;
+  int *p1,*p2,*s;
 
+  s = malloc(dim);
   p1 = malloc(dim);
   p2 = malloc(dim);
 
   for (i=0; i<dim;i++)
   {
     *(p1+i)=*(red+i);
-    *(p2+i)=*(red+dim*dim+i);
+    *(p2+i)=*(red+(dim*(dim-1)+i));
   }
+
+  for(i=0;i<dim;i++)
+  {
+    printf("%d ",*(p1+i));
+  }
+
+  printf("\n");
+  for(i=0;i<dim;i++)
+  {
+
+    printf("%d ",*(p2+i));
+  }
+  printf("\n");
 
   for (i=0;i<dim;i++)
   {
@@ -278,10 +295,26 @@ int percolacion(int *red, int dim)
     {
       if (*(p1+i)==*(p2+j) && *(p1+i))
       {
-        printf("He percolado =)");
+        *(s+i)=1;
       }
+
     }
   }
+
+
+
+
+
+    for(i=0;i<dim;i++)
+    {
+      if (*(s+i)==1)
+      {
+        printf("He percolado =)");
+        printf("\n");
+        break;
+
+      }
+      }
 
 
   return 0;
