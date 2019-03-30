@@ -30,7 +30,6 @@ int main(int argc,char** argv[])
 
   poblar(red, p, dim);                  //Usa la funcion poblar.
   clasificar(red,dim);
-  //etiqueta_falsa(red, hist, S1, S2, i, j, dim);
   imprimir(red,dim);
   percolacion(red,dim);
   free(red);
@@ -58,17 +57,18 @@ int poblar(int *red, float p, int dim)
     { *(red+i)=0;                       //Asigna por defecto el valor <vacio>
       random=((float)rand())/((float) RAND_MAX);    //Valor aleatorio entre 0 y 1.
       if (random<p)
-      *(red+i)=1;                       //Asigna como <lleno> si el valor aleatorio es menor.
+        *(red+i)=1;                       //Asigna como <lleno> si el valor aleatorio es menor.
     }
 
     for (i=0;i<dim;i++) // Imprimo la red para ver como quedo
       {for (j=0;j<dim;j++)
         {
-        printf("%d ", *(red+dim*i+j));
+          printf("%d ", *(red+dim*i+j));
         }
       printf("\n");
       }
-      printf("\n");
+  printf("\n");
+
   return 0;
 }
 
@@ -96,15 +96,18 @@ int clasificar(int *red,int dim)
 
 
   if(*(red)) //primer lugar
-    { *(red) = frag;
+    {
+      *(red) = frag;
       frag++;
 
     }
 
   for(i=1;i<dim;i++) //primera fila sin primer lugar
-  { S1= *(red+i-1);
+  {
+    S1= *(red+i-1);
     if(*(red+i) && S1)
-    { *(red+i) = S1;
+    {
+       *(red+i) = S1;
 
     }
     if(*(red+i) && !S1)
@@ -118,7 +121,7 @@ int clasificar(int *red,int dim)
 
   for(i=1;i<dim;i++)  //primera columna sin primer lugar
   {
-    S2 = *(red+(i*dim-dim)); //ESTO. Aca teniamos un red+i-dim
+    S2 = *(red+(i*dim-dim));
     if(*(red+(i*dim)) && S2)
     {
       *(red+(i*dim)) = S2;
@@ -145,24 +148,24 @@ int clasificar(int *red,int dim)
         {
          if (S1 && S2 && (S2<S1)) //Los dos son 1 y S1 más grande
           {
-            *(red+(i*dim+j)) = S2;
-            *(red+(i*dim+j-1))= S2;
-            *(hist+S1)=-*(hist+S2);
+            *(red+(i*dim+j)) = S2; //Cambio el lugar donde estoy parado por el minimo
+            *(red+(i*dim+j-1))= S2; //Cambio al otro vecino por el minimo
+            *(hist+S1)=-*(hist+S2); //Pongo el menos en el historial
 
-            //etiqueta_falsa(red, hist, S1, S2, i,j,dim);
+
           }
          if (S1 && S2 && (S1<S2)) //Los dos son 1 y S2 más grande
          {
            *(red+(i*dim+j)) = S1;
            *(red+(i*dim+j-dim))=S1;
            *(hist+S2)=-*(hist+S1);
-           //etiqueta_falsa(red, hist, S1, S2, i,j,dim);
+
          }
 
          if (S1 && S2 && S2==S1) //Los dos son 1 y son iguales, elijo arbitrariamente S2
          {
            *(red+(i*dim+j)) = S2;
-           //etiqueta_falsa(red, hist, S1, S2, i,j,dim);
+
 
          }
         if ((!S1) && S2) //S1 es cero y S2 es 1
@@ -196,12 +199,12 @@ int clasificar(int *red,int dim)
 
 etiqueta_falsa(red, hist, S1, S2, i, j,dim);
 
-for(i=0;i<dim*dim;i++) //cambio la red
-{
-  a=*(red+i);
-  *(red+i)=*(hist+a);
+  for(i=0;i<dim*dim;i++) //cambio la red
+  {
+    a=*(red+i);
+    *(red+i)=*(hist+a);
 
-}
+  }
 
 
 return 0;
@@ -212,10 +215,11 @@ int etiqueta_falsa(int *red, int *hist, int S1, int S2, int i, int j, int dim)
 
   {
 
-    for(i=1;i<dim;i++) //todo el resto
+    for(i=1;i<dim;i++) //Cambio los valores del historial a positivos
     {
       for(j=1;j<dim;j++)
-      { S1 = *(red+(i*dim+j-1));
+      {
+        S1 = *(red+(i*dim+j-1));
         S2 = *(red+(i*dim+j-dim));
         while(*(hist+S1)<0 && S1)
         {
@@ -249,65 +253,76 @@ int etiqueta_falsa(int *red, int *hist, int S1, int S2, int i, int j, int dim)
 int imprimir(int *red, int dim)
 { int i,j;
 
-printf("\n");
-for (i=0;i<dim;i++) // Imprimo la red para ver como quedo
-  {for (j=0;j<dim;j++)
-    {
-    printf("%d ", *(red+dim*i+j));
-    }
   printf("\n");
-    }
-  printf("\n");
+  for (i=0;i<dim;i++) // Imprimo la red para ver como quedo
+    {for (j=0;j<dim;j++)
+      {
+        printf("%d ", *(red+dim*i+j));
+      }
+      printf("\n");
+      }
+      printf("\n");
 
 return 0;
 }
 
-int percolacion(int *red, int dim)
-{ int i, j;
+int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
+{ int i, j,b;
   int *p1,*p2,*s;
 
   s = malloc(dim);
   p1 = malloc(dim);
   p2 = malloc(dim);
 
-  for (i=0; i<dim;i++)
+  for (i=0; i<dim;i++) //genero dos vectores con la primera y la ultima fila
   {
     *(p1+i)=*(red+i);
     *(p2+i)=*(red+(dim*(dim-1)+i));
   }
 
-  for(i=0;i<dim;i++)
+  for(i=0;i<dim;i++) //los imprimo para ver que onda
   {
     printf("%d ",*(p1+i));
   }
 
   printf("\n");
+
   for(i=0;i<dim;i++)
   {
 
-    printf("%d ",*(p2+i));
+    printf("%d ",*(p2+i)); //idem
   }
-  printf("\n");
 
-  for (i=0;i<dim;i++)
+  for(i=0;i<dim;i++) //genero vector donde voy a guardar la informacion de si percolo o no
+  {
+    *(s+i)=0;
+  }
+
+  for (i=0;i<dim;i++) //si coincide algun numero pongo un 1 en otro vector
   {
     for (j=0; j<dim;j++)
     {
-      if (*(p1+i)==*(p2+j) && *(p1+i))
+      if (*(p1+i) && *(p1+i)==*(p2+j))
       {
-        *(s+i)=1;
+        b=*(p1+i);
+        *(s+b)=*(s+b)+1;
       }
 
     }
   }
 
+  printf("\n");
+  for(i=0;i<dim;i++)
+  {
+    printf("%d ",*(s+i));
+  }
+
+  printf("\n");
 
 
-
-
-    for(i=0;i<dim;i++)
+    for(i=0;i<dim;i++) //si en el nuevo vector hay algun valor distinto de 0 aviso que percolo
     {
-      if (*(s+i)==1)
+      if (*(s+i))
       {
         printf("He percolado =)");
         printf("\n");
