@@ -3,15 +3,17 @@
 #include<math.h>
 #include<time.h>
 
-int poblar (int *red, float p, int dim);
+int poblar (int *red, float p, int dim, float seed);
 int clasificar(int *red,int dim);
 int etiqueta_falsa(int *red, int *hist, int S1, int S2, int i, int j, int dim);
 int imprimir(int *red,int dim);
 int percolacion(int *red, int dim);
+int pc(int dim, float p, int *s);
+
 
 int main(int argc,char** argv[])
 {
-  float p;
+  float p, seed;
   int dim, i, j, S1, S2;
   int *red;
   int *hist;
@@ -22,16 +24,18 @@ int main(int argc,char** argv[])
 
   hist = malloc((dim*dim)/2);
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
-  p1 = malloc(dim);
-  p2 = malloc(dim);
-  s = malloc(dim);
+  p1 = malloc(5*dim); //El 5 es arbitrario, no sé cuanto espacio hay que darles posta, pero esto funciona
+  p2 = malloc(5*dim);
+  s = malloc(5*dim);
   sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
+  sscanf(argv[3],"%f",& seed);
 
-  poblar(red, p, dim);                  //Usa la funcion poblar.
+  poblar(red, p, dim, seed);                  //Usa la funcion poblar.
   clasificar(red,dim);
   imprimir(red,dim);
   percolacion(red,dim);
+  pc(dim,p,s);
   free(red);
   free(hist);
   free(p1);
@@ -45,12 +49,12 @@ int main(int argc,char** argv[])
 
 
 
-int poblar(int *red, float p, int dim)
+int poblar(int *red, float p, int dim, float seed)
 {
   float random;
   int i,j;
-  srand(time(NULL));
-
+  //srand(time(NULL));
+  srand(seed); //fijé esta semilla porque pintò
 
   for (i=0;i<dim*dim;i++)               //Toma como rango máximo la cantidad de celdas totales.
 
@@ -82,8 +86,7 @@ int clasificar(int *red,int dim)
   int S1,S2,i,j,a;
   int frag = 2;
   int *hist;
-  int minimo;
-  int maximo;
+
 
   hist = malloc((dim*dim)/2);
 
@@ -270,9 +273,9 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
 { int i, j,b;
   int *p1,*p2,*s;
 
-  s = malloc(dim);
-  p1 = malloc(dim);
-  p2 = malloc(dim);
+  s = malloc(5*dim);
+  p1 = malloc(5*dim);
+  p2 = malloc(5*dim);
 
   for (i=0; i<dim;i++) //genero dos vectores con la primera y la ultima fila
   {
@@ -280,7 +283,7 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
     *(p2+i)=*(red+(dim*(dim-1)+i));
   }
 
-  for(i=0;i<dim;i++) //los imprimo para ver que onda
+  /*for(i=0;i<dim;i++) //los imprimo para ver que onda
   {
     printf("%d ",*(p1+i));
   }
@@ -291,14 +294,14 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
   {
 
     printf("%d ",*(p2+i)); //idem
-  }
+  }*/
 
   for(i=0;i<dim;i++) //genero vector donde voy a guardar la informacion de si percolo o no
   {
     *(s+i)=0;
   }
 
-  for (i=0;i<dim;i++) //si coincide algun numero pongo un 1 en otro vector
+  for (i=0;i<dim;i++) //si coincide algun numero pongo un 1 en
   {
     for (j=0; j<dim;j++)
     {
@@ -312,7 +315,7 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
   }
 
   printf("\n");
-  for(i=0;i<dim;i++)
+  for(i=0;i<dim;i++) //Imprimo s para ver que onda
   {
     printf("%d ",*(s+i));
   }
@@ -332,6 +335,45 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
       }
 
 
-  return 0;
+    return 0;
 
+}
+
+int pc(int dim, float p, int *s) //esto va a calcular pc
+
+{ int i;
+
+
+
+
+
+   //while (p) //no sé, acá tengo que ponerle alguna condiciòn para que esto lo haga hasta alcanzar tal precision en p.
+  //{
+
+  printf("\n");
+  for(i=0;i<dim;i++) //Imprimo s para ver que onda
+  {
+    printf("%d ",*(s+i));
+  }
+  printf("\n");
+
+    for(i=0;i<dim;i++) //me fijo si la red percoló y si percolo le pido que cambie la p con -p/2, sino por +p/2
+    {
+      if (*(s+i))
+      { printf("Entre al if");
+        p=p-(p/2);
+        printf("%f\n",p);
+        break;
+      }
+      /*else
+      {
+        p=p+(p/2);
+        printf("%f\n",p);
+        break;
+      }*/
+    }
+
+
+  //}
+  return 0;
 }
