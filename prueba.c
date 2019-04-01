@@ -7,8 +7,8 @@ int poblar (int *red, float p, int dim, float seed);
 int clasificar(int *red,int dim);
 int etiqueta_falsa(int *red, int *hist, int S1, int S2, int i, int j, int dim);
 int imprimir(int *red,int dim);
-int percolacion(int *red, int dim);
-int pc(int dim, float p, int *s);
+int percolacion(int *red, int dim, float p);
+
 
 
 int main(int argc,char** argv[])
@@ -17,16 +17,14 @@ int main(int argc,char** argv[])
   int dim, i, j, S1, S2;
   int *red;
   int *hist;
-  int *p1;
-  int *p2;
   int *s;
+  float *pc;
 
 
   hist = malloc((dim*dim)/2);
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
-  p1 = malloc(5*dim); //El 5 es arbitrario, no sé cuanto espacio hay que darles posta, pero esto funciona
-  p2 = malloc(5*dim);
-  s = malloc(5*dim);
+  s = malloc(5*dim);                    //El 5 es arbitrario, pero si pongo solo dim hace lio y se pisa la memoria
+  pc = malloc(5*dim);                      //CON ESTE HAY QUE TENER CUIDADO, PORQUE NO SE REALMENTE QUE LARGO VA A TENER Y PUEDE LLEGAR A PISARSE CON ALGO. HABRIA QUE ESTIMARLO
   sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
   sscanf(argv[3],"%f",& seed);
@@ -34,13 +32,11 @@ int main(int argc,char** argv[])
   poblar(red, p, dim, seed);                  //Usa la funcion poblar.
   clasificar(red,dim);
   imprimir(red,dim);
-  percolacion(red,dim);
-  pc(dim,p,s);
+  percolacion(red,dim,p);
   free(red);
   free(hist);
-  free(p1);
-  free(p2);
   free(s);
+  free(pc);
 
 
   return 0;
@@ -54,7 +50,7 @@ int poblar(int *red, float p, int dim, float seed)
   float random;
   int i,j;
   //srand(time(NULL));
-  srand(seed); //fijé esta semilla porque pintò
+  srand(seed); //Ahora le voy a dar una seed yo
 
   for (i=0;i<dim*dim;i++)               //Toma como rango máximo la cantidad de celdas totales.
 
@@ -94,9 +90,6 @@ int clasificar(int *red,int dim)
     {
       *(hist+i)=i;
     }
-
-
-
 
   if(*(red)) //primer lugar
     {
@@ -269,45 +262,30 @@ int imprimir(int *red, int dim)
 return 0;
 }
 
-int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
-{ int i, j,b;
-  int *p1,*p2,*s;
+int percolacion(int *red, int dim, float p) //Esta funcion me dice si percolo o no
+{ int i, j,b,suma;
+  int *s;
+  float *pc;
+  //float p;
+
+
 
   s = malloc(5*dim);
-  p1 = malloc(5*dim);
-  p2 = malloc(5*dim);
+  suma=0;
 
-  for (i=0; i<dim;i++) //genero dos vectores con la primera y la ultima fila
-  {
-    *(p1+i)=*(red+i);
-    *(p2+i)=*(red+(dim*(dim-1)+i));
-  }
 
-  /*for(i=0;i<dim;i++) //los imprimo para ver que onda
-  {
-    printf("%d ",*(p1+i));
-  }
-
-  printf("\n");
-
-  for(i=0;i<dim;i++)
-  {
-
-    printf("%d ",*(p2+i)); //idem
-  }*/
-
-  for(i=0;i<dim;i++) //genero vector donde voy a guardar la informacion de si percolo o no
+  for(i=0;i<dim;i++) //aca voy a guardar la informacion sobre si percolo o no
   {
     *(s+i)=0;
   }
 
-  for (i=0;i<dim;i++) //si coincide algun numero pongo un 1 en
+  for (i=0;i<dim;i++) //si coincide algun numero pongo un 1
   {
     for (j=0; j<dim;j++)
     {
-      if (*(p1+i) && *(p1+i)==*(p2+j))
+      if (*(red+i) && *(red+i)==*(red+(dim*(dim-1)+j))) //comparo primera y ultima fila
       {
-        b=*(p1+i);
+        b=*(red+i);
         *(s+b)=*(s+b)+1;
       }
 
@@ -329,51 +307,116 @@ int percolacion(int *red, int dim) //Esta funcion me dice si percolo o no
       {
         printf("He percolado =)");
         printf("\n");
-        break;
+        break; //para que me avise la 1era vez que ve algo distinto de 0 y nada mas
 
       }
+    }
+
+    for(i=0;i<dim;i++) // Sumo los valores del pointer s. Si esto da distinto de 0, se que percolo
+    {
+      suma=suma+*(s+i);
+
+    }
+    printf("\n");
+    printf("%d La suma es ",suma);
+    printf("\n");
+
+    printf("%f ",p );
+    printf("\n");
+
+    *(pc)=p;  //aca y con el for me creo mi pointer pc que va a contener a las probabilidades
+
+
+    for(i=0;i<5*dim;i++) //ESTO ES UN PROBLEMA Y EL LUGAR 0 TAMBIEN, ESTIMO SERA PROBLEMA DE MEMORIA
+    {
+      *(pc+i)=0;
+    }
+
+    for (i=0;i<5*dim;i++) //lo imprimo a ver si esta bien
+    {
+      printf("%f ",*(pc+i));
+    }
+
+//El primer p lo hago por separado tambin porque necesito si o si dos para comparar
+
+    if (suma) //si da distinto de 0 quiere decir que percolo, asi que le resto p/2
+    {
+      *(pc+1)=*(pc)-*(pc)/2;
+
+    }
+    else //al reves
+    {
+      *(pc+1)=*(pc)+*(pc)/2;
+    }
+
+    for(i=2;i<5*dim;i++) //el resto
+    {
+       while ( (*(pc+i)-*(pc+i-1)>0.01) || (*(pc+i)-*(pc+i-1)<-0.01) ) //tengo que tener en cuenta que en el paso posterior puede ser menor p
+       {
+         if(suma)
+         {
+           *(pc+i)=*(pc+i-1) - *(pc+i-1)/2;
+         }
+         else
+         {
+        *(pc+i)=*(pc+i-1) + *(pc+i-1)/2;
+        }
       }
 
+    }
+
+    printf("\n");
+
+    for(i=0;i<5*dim;i++)
+    {
+      printf("%f ",*(pc+i));
+
+    }
+
+    printf("\n");
 
     return 0;
 
 }
 
-int pc(int dim, float p, int *s) //esto va a calcular pc
+//int pc(int dim, float p, int *s) //esto va a calcular pc
 
-{ int i;
+/*{ int i,suma;
 
-
-
+  //printf("%d\n",suma );
+//Me sigue tirando suma 0, lo que psaba antes con s. que poronga
 
 
    //while (p) //no sé, acá tengo que ponerle alguna condiciòn para que esto lo haga hasta alcanzar tal precision en p.
-  //{
+  //{ Algo de que la diferencia entre dos p sucesivos sea menor a 0.01. Quizas tenga que hacer un pointer donde voy almacenando los p que calculo y ahi si puedo sacar la diferencia entre dos sucesivos tranca.
 
-  printf("\n");
-  for(i=0;i<dim;i++) //Imprimo s para ver que onda
+  //printf("\n");
+
+  /*for(i=0;i<dim;i++) //Imprimo s para ver que onda
   {
     printf("%d ",*(s+i));
+  }*/
+
+  //printf("\n");
+  //printf("\n");
+
+  /*for(i=0;i<dim;i++) // Sumo los valores del pointer s
+  {
+    suma=suma+*(s+i);
+
   }
-  printf("\n");
+  printf("%d La suma es ",suma);
 
-    for(i=0;i<dim;i++) //me fijo si la red percoló y si percolo le pido que cambie la p con -p/2, sino por +p/2
-    {
-      if (*(s+i))
-      { printf("Entre al if");
-        p=p-(p/2);
-        printf("%f\n",p);
-        break;
-      }
-      /*else
-      {
-        p=p+(p/2);
-        printf("%f\n",p);
-        break;
-      }*/
-    }
-
+  if (suma) //si da distinto de 0 quiere decir que percolo, asi que le resto p/2
+  {
+    p=p-p/2;
+  }
+  else //al reves
+  {
+    p=p+p/2;
+  }
+  printf("f\n",p);
 
   //}
   return 0;
-}
+}*/
