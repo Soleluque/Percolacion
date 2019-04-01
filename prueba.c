@@ -19,9 +19,10 @@ int main(int argc,char*argv[])
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
 
+
   poblar(red, p, dim);
-  imprimir(red,dim);
-  printf("\n");
+  //imprimir(red,dim);
+  //printf("\n");
   clasificar(red,dim);
   imprimir(red,dim);
   printf("\n");
@@ -54,7 +55,7 @@ int clasificar(int *red,int dim)
   int *historial;
 
   //Creo la tira historial:
-  historial = malloc((dim*dim)/2);
+  historial = malloc((dim*dim)/2*sizeof(int));
   for(i=0;i<=(dim*dim)/2;i++)
   { *(historial+i) = i;
   }
@@ -122,11 +123,6 @@ int clasificar(int *red,int dim)
     }
   }
 
-  /*for(i=0;i<=(dim*dim)/2;i++)
-  { printf("%d ", *(historial+i));
-  }
-  printf("\n");*/
-
   for(i=1;i<dim;i++) //Todo el resto.
   { for(j=1;j<dim;j++)
     { S1 = *(red+(i*dim+j-1)); //El casillero de la izquierda.
@@ -161,7 +157,7 @@ int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
   for (i=0;i<dim;i++)
     {for (j=0;j<dim;j++)
       {
-      printf("%d ", *(red+dim*i+j));
+      printf("%02d ", *(red+dim*i+j));
       }
     printf("\n");
     }
@@ -182,9 +178,9 @@ int percolacion(int *red, int dim)
     }
   }
 
-  if(p==1)
+  /*if(p==1)
   {printf("Percola.\n");
-  }
+}*/
 
-  return 0;
+  return p;
 }
