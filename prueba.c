@@ -3,7 +3,7 @@
 #include <math.h>
 #include <time.h>
 
-int poblar (int *red, float p, int dim);
+int poblar (int *red, float p, int dim, int sem);
 int etiqueta_falsa(int *red,int *historial, int S1, int S2, int i, int j, int dim);
 int clasificar(int *red,int dim);
 int percolacion(int *red, int dim);
@@ -12,30 +12,60 @@ int imprimir(int *red,int dim);
 
 //Función principal:
 int main(int argc,char*argv[])
-{ float p;
-  int dim;
+{ float p, p_i, p_f, prec = 0.0001, p_c;
+  int dim, i, per, sem;
   int *red;
+
   sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
+
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
 
+  p_c = 0;
 
-  poblar(red, p, dim);
-  //imprimir(red,dim);
-  //printf("\n");
-  clasificar(red,dim);
-  imprimir(red,dim);
-  printf("\n");
-  percolacion(red, dim);
+  for(sem=0;sem<10000;sem++)
+  { p_f = 0;
+    p_i = p;
+    i = 2;
+
+    while(fabs(p_f-p_i)>prec)
+    { poblar(red, p_i, dim,sem);
+      //imprimir(red,dim);
+      //printf("\n");
+      clasificar(red,dim);
+      //imprimir(red,dim);
+      //printf("\n");
+      per = percolacion(red, dim);
+
+      if(per == 1)
+      { p_f = p_i;
+        p_i = p_i - 1.0/pow(2,i);
+        i++;
+      }
+      if(per == 0)
+      { p_f = p_i;
+        p_i = p_i + 1.0/pow(2,i);
+        i++;
+      }
+    }
+
+    p_c += p_f;
+  }
+
+  p_c = p_c/10000;
+
+  printf("El P_c para L = %i es: %f.\n", dim, p_c);
+
   free(red);
+
   return 0;
 }
 
 //Funciones secundarias:
-int poblar(int *red, float p, int dim)
+int poblar(int *red, float p, int dim, int sem)
 { float random;
   int i;
-  srand(time(NULL));
+  srand(sem);
 
 
   for (i=0;i<dim*dim;i++)               //Toma como rango máximo la cantidad de celdas totales.
@@ -166,21 +196,15 @@ int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
 }
 
 int percolacion(int *red, int dim)
-{ int i,j,p;
-
-  p = 0;
+{ int i,j,per = 0;
 
   for(i=0;i<dim;i++)
   { for(j=0;j<dim;j++)
     { if (*(red+i) == *(red+(dim-1)*dim+j) && *(red+i))
-      { p = 1;
+      { per = 1;
       }
     }
   }
 
-  /*if(p==1)
-  {printf("Percola.\n");
-}*/
-
-  return p;
+  return per;
 }
