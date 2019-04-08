@@ -23,18 +23,18 @@ int main(int argc,char*argv[])
 
   p_c = 0;
 
-  for(sem=0;sem<10000;sem++)
+  for(sem=4;sem<5;sem++)
   { p_f = 0;
     p_i = p;
     i = 2;
 
     while(fabs(p_f-p_i)>prec)
     { poblar(red, p_i, dim,sem);
-      //imprimir(red,dim);
-      //printf("\n");
+      imprimir(red,dim);
+      printf("\n");
       clasificar(red,dim);
-      //imprimir(red,dim);
-      //printf("\n");
+      imprimir(red,dim);
+      printf("\n");
       per = percolacion(red, dim);
 
       if(per == 1)
@@ -52,7 +52,7 @@ int main(int argc,char*argv[])
     p_c += p_f;
   }
 
-  p_c = p_c/10000;
+  p_c = p_c/1;
 
   printf("El P_c para L = %i es: %f.\n", dim, p_c);
 
@@ -127,12 +127,12 @@ int clasificar(int *red,int dim)
       if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos o uno de ellos son 1.
       { if (S1 && S2 && (S2<S1)) //Los dos son 1 y S1 más grande.
         { *(red+(i*dim+j))=S2;
-          *(red+(i*dim+j-1))=S2;
+          //*(red+(i*dim+j-1))=S2;
           *(historial+S1) = -*(historial+S2);
         }
         if (S1 && S2 && (S1<S2)) //Los dos son 1 y S2 más grande.
         { *(red+(i*dim+j))=S1;
-          *(red+(i*dim+j-dim))=S1;
+          //*(red+(i*dim+j-dim))=S1;
           *(historial+S2) = -*(historial+S1);
         }
         if (S1 && S2 && (S2==S1)) //Los dos son 1 y son iguales, elijo arbitrariamente S2.
@@ -153,6 +153,12 @@ int clasificar(int *red,int dim)
     }
   }
 
+  for(i=0;i<(dim*dim)/2;i++)
+  {
+    printf("%i ", *(historial+i));
+  }
+  printf("\n");
+
   for(i=1;i<dim;i++) //Todo el resto.
   { for(j=1;j<dim;j++)
     { S1 = *(red+(i*dim+j-1)); //El casillero de la izquierda.
@@ -160,6 +166,10 @@ int clasificar(int *red,int dim)
 
       etiqueta_falsa(red, historial, S1, S2, i, j, dim);
       }
+  }
+
+  for(i=0;i<dim*dim;i++)
+  { *(red+i) = *(historial+*(red+i));
   }
 
   free(historial);
