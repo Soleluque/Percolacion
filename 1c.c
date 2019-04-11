@@ -5,6 +5,7 @@
 
 int poblar (int *red, float p, int dim, int sem);
 int etiqueta_verdadera(int *historial, int s);
+int etiqueta_falsa(int *red,int *historial, int S1, int S2, int i, int j, int dim);
 int clasificar(int *red,int dim);
 int percolacion(int *red, int dim);
 int imprimir(int *red,int dim);
@@ -12,34 +13,62 @@ int imprimir(int *red,int dim);
 
 //Función principal:
 int main(int argc,char*argv[])
-{ float p, p_c=0;
-  int dim, sem, veces;
+{ float p=0.5, p_i, p_f, prec = 0.0001, p_c, dev = 0;
+  int dim, i, per, sem;
   int *red;
+  float  *p_fs;
+  FILE desviacion;
 
-  sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
+  //sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
+  //sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
 
   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
+  p_fs = malloc(10000*sizeof(float));
 
-  for(p=0;p<1.001;p+=0.001)
-  { veces = 0;
-    for(sem=0;sem<180;sem++)
-    { poblar(red, p, dim,sem);
-      clasificar(red,dim);
+  while(i!=256)
+  { i=4;
 
-      if(percolacion(red, dim))
-      { veces+=1;
+  p_c = 0;
+
+  for(sem=0;sem<10000;sem++)
+  { p_f = 0;
+    p_i = p;
+    i = 2;
+
+    while(fabs(p_f-p_i)>prec)
+    { poblar(red, p_i, i,sem);
+      clasificar(red,i);
+      per = percolacion(red, i);
+
+      if(per == 1)
+      { p_f = p_i;
+        p_i = p_i - 1.0/pow(2,i);
+        i++;
+      }
+      if(per == 0)
+      { p_f = p_i;
+        p_i = p_i + 1.0/pow(2,i);
+        i++;
       }
     }
-
-    if(veces>=90)
-    {
-      break;
-    }
-    p_c = p;
+    *(p_fs+sem) = p_f;
+    p_c += p_f;
   }
 
-  printf("El P_c para L = %i es: %f.\n", dim, p_c);
+  p_c = p_c/10000;
 
+  for(i=0;i<10000;i++)
+  { dev += pow(*(p_fs+i)-p_c,2);
+  }
+
+  dev /= 10000;
+  dev = pow(dev,0.5);
+
+
+  i*=2;
+  }
+
+  //printf("La desviación estandar es = %f\n", dev);
 
   free(red);
 
