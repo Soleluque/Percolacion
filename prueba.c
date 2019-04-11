@@ -128,12 +128,10 @@ int clasificar(int *red,int dim)
       if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos o uno de ellos son 1.
       { if (S1 && S2 && (etiqueta_verdadera(historial, S2)<etiqueta_verdadera(historial, S1))) //Los dos son 1 y S1 más grande.
         { *(red+(i*dim+j)) = etiqueta_verdadera(historial, S2);
-          //*(red+(i*dim+j-1))=S2;
           *(historial+S1) = -abs(*(historial+S2));
         }
         if (S1 && S2 && (etiqueta_verdadera(historial, S1)<etiqueta_verdadera(historial, S2))) //Los dos son 1 y S2 más grande.
         { *(red+(i*dim+j)) = etiqueta_verdadera(historial, S1);
-          //*(red+(i*dim+j-dim))=S1;
           *(historial+S2) = -abs(*(historial+S1));
         }
         if (S1 && S2 && (etiqueta_verdadera(historial, S2)==etiqueta_verdadera(historial, S1))) //Los dos son 1 y son iguales, elijo arbitrariamente S2.
@@ -153,12 +151,6 @@ int clasificar(int *red,int dim)
       }
     }
   }
-
-  /*for(i=0;i<(dim*dim)/2;i++)
-  {
-    printf("%i ", *(historial+i));
-  }
-  printf("\n");*/
 
   for(i=0; i<dim*dim/2; i++)
   { *(historial+i)=etiqueta_verdadera(historial, i);
