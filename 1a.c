@@ -4,7 +4,6 @@
 #include <time.h>
 
 int poblar (int *red, float p, int dim, int sem);
-int etiqueta_falsa(int *historial, int s, int dim);
 int clasificar(int *red,int dim);
 int etiqueta_verdadera(int *historial, int s);
 int percolacion(int *red, int dim);
@@ -131,30 +130,25 @@ int clasificar(int *red,int dim)
       if( *(red+(i*dim+j)) && (S1 || S2)) // Acá entran cuando los dos o uno de ellos son 1.
       { if (S1 && S2 && (etiqueta_verdadera(historial,S2)<etiqueta_verdadera(historial,S1))) //Los dos son 1 y S1 más grande.
         { *(red+(i*dim+j))=etiqueta_verdadera(historial,S2);
-          //*(red+(i*dim+j-1))=S2;
-          //*(historial+S1) = -abs(*(historial+S2));
+
           *(historial+etiqueta_verdadera(historial,S1))=-etiqueta_verdadera(historial,S2);
         }
         if (S1 && S2 && (etiqueta_verdadera(historial,S1)<etiqueta_verdadera(historial,S2))) //Los dos son 1 y S2 más grande.
         { *(red+(i*dim+j))=etiqueta_verdadera(historial,S1);
-          //*(red+(i*dim+j-dim))=S1;
-          //*(historial+S2) = -abs(*(historial+S1));
+
           *(historial+etiqueta_verdadera(historial,S2))=-etiqueta_verdadera(historial,S1);
         }
         if (S1 && S2 && (etiqueta_verdadera(historial,S2)==etiqueta_verdadera(historial,S1))) //Los dos son 1 y son iguales, elijo arbitrariamente S2.
         { *(red+(i*dim+j))=etiqueta_verdadera(historial,S2);
-          //*(historial+S2)=*(historial+S2);
-          //*(historial+S1)=*(historial+S2);
-          //*(historial+etiqueta_verdadera(historial,S2))=etiqueta_verdadera(historial,S2);
-          //*(historial+etiqueta_verdadera(historial,S1))=etiqueta_verdadera(historial,S2);
+
        }
         if ((!S1) && S2) //S1 es cero y S2 es 1.
         { *(red+(i*dim+j))=etiqueta_verdadera(historial,S2);
-          //*(historial+S2)=-etiqueta_verdadera(historial,S2);
+
         }
         if (S1 && (!S2)) //S1 es 1 y S2 es cero.
         { *(red+(i*dim+j))=etiqueta_verdadera(historial,S1);
-          //*(historial+S1)=-etiqueta_verdadera(historial,S1);
+
         }
        }
 
@@ -169,15 +163,6 @@ int clasificar(int *red,int dim)
    { printf("%i ", *(historial+i));
    }
    printf("\n");*/
-
-  /*for(i=1;i<dim;i++) //Todo el resto.
-  { for(j=1;j<dim;j++)
-    { S1 = *(red+(i*dim+j-1)); //El casillero de la izquierda.
-      S2 = *(red+(i*dim+j-dim)); //El casillero de arriba.
-
-      etiqueta_falsa(historial, s, dim);
-      }
-  }*/
 
 
 
@@ -219,52 +204,6 @@ int etiqueta_verdadera(int *historial, int s)
 
 
 
-/*int etiqueta_falsa(int *historial,int s,int dim)
-{ int dim, s;
-   //int maximo,minimo;
-
-  //S1_aux = S1;
-  /*while(*(historial+S1)<0) //Va recorriendo el historial yendo por los negativos
-  {
-    *(historial+S1)=*(historial-*(historial+S1));
-  }
-
-  while(*(historial+S2)<0)
-  {
-    *(historial+S2)=*(historial-*(historial+S2));
-  }
-
-  /*if(S1<S2 && S1)
-  {
-    minimo=S1;
-    maximo=S2;
-  }
-
-  if(S1>S2 && S2)
-  {
-    minimo=S2;
-    maximo=S1;
-  }
-
-  *(historial+S1)=minimo;
-  *(historial+S2)=minimo;
-
- for(s=0;s=dim*dim/2;s++)
- {
-   *(historial+s)=etiqueta_verdadera(historial, s);
-
-  }
-
-  /*while(*(historial+S1)<0 && S1)  //Los hace positivos en el historial
-  { *(historial+S1) = -*(historial+S1);
-  }
-  while (*(historial+S2)<0 && S2)
-  { *(historial+S2) = -*(historial+S2);
-  }
-
-  return *(historial+s);
-
-}*/
 
 
 int imprimir(int *red, int dim)         //Imprime una fila debajo de la otra.
