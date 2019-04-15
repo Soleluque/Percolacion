@@ -17,59 +17,58 @@ int main(int argc,char*argv[])
   int dim, i, per, sem;
   int *red;
   float  *p_fs;
-  FILE desviacion;
+  FILE *desviacion;
 
-  //sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
-  //sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
-
-  red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
   p_fs = malloc(10000*sizeof(float));
+  desviacion = fopen("desviacion.txt", "w");
 
-  while(i!=256)
-  { i=4;
+  dim=4;
 
-  p_c = 0;
+  while(dim!=256)
+  { red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
 
-  for(sem=0;sem<10000;sem++)
-  { p_f = 0;
-    p_i = p;
-    i = 2;
+    p_c = 0;
 
-    while(fabs(p_f-p_i)>prec)
-    { poblar(red, p_i, i,sem);
-      clasificar(red,i);
-      per = percolacion(red, i);
+    for(sem=0;sem<10000;sem++)
+    { p_f = 0;
+      p_i = p;
+      i = 2;
 
-      if(per == 1)
-      { p_f = p_i;
-        p_i = p_i - 1.0/pow(2,i);
-        i++;
+      while(fabs(p_f-p_i)>prec)
+      { poblar(red, p_i, dim,sem);
+        clasificar(red,dim);
+        per = percolacion(red, dim);
+
+        if(per == 1)
+        { p_f = p_i;
+          p_i = p_i - 1.0/pow(2,i);
+          i++;
+        }
+        if(per == 0)
+        { p_f = p_i;
+          p_i = p_i + 1.0/pow(2,i);
+          i++;
+        }
       }
-      if(per == 0)
-      { p_f = p_i;
-        p_i = p_i + 1.0/pow(2,i);
-        i++;
-      }
+      *(p_fs+sem) = p_f;
+      p_c += p_f;
     }
-    *(p_fs+sem) = p_f;
-    p_c += p_f;
+
+    p_c = p_c/10000;
+
+    for(i=0;i<10000;i++)
+    { dev += pow(*(p_fs+i)-p_c,2);
+    }
+
+    dev /= 10000;
+    dev = pow(dev,0.5);
+
+    fprintf(desviacion, "%f %f\n", dev, p_c);
+
+    dim*=2;
   }
 
-  p_c = p_c/10000;
-
-  for(i=0;i<10000;i++)
-  { dev += pow(*(p_fs+i)-p_c,2);
-  }
-
-  dev /= 10000;
-  dev = pow(dev,0.5);
-
-
-  i*=2;
-  }
-
-  //printf("La desviación estandar es = %f\n", dev);
-
+  fclose(desviacion);
   free(red);
 
   return 0;
