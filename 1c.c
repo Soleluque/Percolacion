@@ -19,12 +19,15 @@ int main(int argc,char*argv[])
 
   //sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   //sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
+  FILE *text;
+  text=fopen("desviacion.txt","w");
 
-  red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
   p_fs= malloc(10000*sizeof(float));
 
+  dim=4;
+
   while(dim!=256)
-{ dim=4;
+{ red = malloc(dim*dim*sizeof(int));
 
   p_c = 0;
 
@@ -73,10 +76,19 @@ int main(int argc,char*argv[])
 
   desviacion=pow(desviacion,0.5);
 
+
+  fprintf(text, "%f  %f\n", desviacion, p_c);
+
+
   printf("La desviacion estandar para L= %d es %f\n", dim, desviacion);
 
+
+
  dim=dim*2;
+
+
 }
+  fclose(text);
   free(red);
 
   return 0;
