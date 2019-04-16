@@ -27,18 +27,25 @@ plt.xlabel('Desviación')
 plt.ylabel('Probabilidad crítica')
 plt.title('Probabilidad crítica en función de dispersión por dimensión')
 plt.legend()
+plt.savefig('pc en funcion de sigma.png')
 plt.show()
+
+
 
 plt.plot(x2,y1,'ro',     label='')
 plt.xlabel('Dimensión de la red')
 plt.ylabel('Probabilidad crítica')
 plt.title('Probabilidad crítica en función de la dimensión de la red')
 plt.legend()
+plt.savefig('pc en funcion de l.png')
 plt.show()
+
+
 
 plt.plot(x2,x1,'go', label='')
 plt.xlabel('Dimensión de la red')
 plt.ylabel('Desviación')
 plt.title('Desviación en función de la dimensión de la red')
 plt.legend()
+plt.savefig('sigma en funcion de l.png')
 plt.show()
