@@ -77,7 +77,7 @@ int main(int argc,char*argv[])
   desviacion=pow(desviacion,0.5);
 
 
-  fprintf(text, "%f  %f\n", desviacion, p_c);
+  fprintf(text, "%f %f %d\n", desviacion, p_c, dim);
 
 
   printf("La desviacion estandar para L= %d es %f\n", dim, desviacion);
