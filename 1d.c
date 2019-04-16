@@ -121,7 +121,7 @@ for(i=0;i<6;i++)
         fprintf(text,"s ns\n");
         for(j=0;j<dim*dim;j++)
         {
-          fprintf(text, "%d %d\n",*(s+j),*(ns+j));
+          fprintf(text, "%d ,  %d\n",*(s+j),*(ns+j));
         }
         fprintf(text,"\n");
 
@@ -138,10 +138,10 @@ for(i=0;i<6;i++)
           printf("%d ",*(ns+j));
         }
 
-        printf("\n");*/
+        printf("\n");
 
-        //imprimir(red,dim);
-        //printf("%f %d\n",p,dim );
+        imprimir(red,dim);
+        printf("%f %d\n",p,dim );*/
 
         p=p+0.0005;
       }
