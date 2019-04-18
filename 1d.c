@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
+
 
 int poblar (int *red, float p, int dim, int sem);
 int clasificar(int *red,int dim);
@@ -13,21 +15,25 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p;
-  int dim, i,j,k,sem;
+  int dim, i,j,k,sem,semm=10;
   int *red,*dims;
   float *p_c;
+  char *ns_n;
+  double *ns_p;
+  //int *per;
 
 
   //sscanf(argv[1],"%d",& dim);           //Busca el primero de los argumentos y lo usa como dim.
   //sscanf(argv[2],"%f",& p);             //Busca el segundo de los argumentos y lo usa como p.
 
 
-  FILE *text;
-  text=fopen("ns.txt","w");
+  FILE *n_s;
+
 
 
   p_c= malloc(6*sizeof(float));
   dims= malloc(6*sizeof(int));
+  ns_n= malloc(sizeof("ns128.txt"));
 
 
 
@@ -49,8 +55,13 @@ int main(int argc,char*argv[])
 
 
 
+
+
 for(i=0;i<6;i++)
   {
+    sprintf(ns_n,"ns%d",*(dims+i));
+    n_s= fopen(ns_n,"w");
+
     int *s,*ns;
 
     dim=*(dims+i);
@@ -61,99 +72,140 @@ for(i=0;i<6;i++)
     red = malloc(dim*dim*sizeof(int));
     s=malloc(dim*dim*sizeof(int));
     ns=malloc(dim*dim*sizeof(int));
+    ns_p= malloc(dim*dim*sizeof(double));
+    //per=malloc(dim*dim*sizeof(int));
     sem=0;
 
-    fprintf(text, "Dimension= %d\n",dim);
+    fprintf(n_s, "%d\n",dim);
 
 
 
     while(p<=(*(p_c+i)+0.1))
     {
-      poblar(red, p, dim,sem);
-
-      clasificar(red,dim);
-
-
       for(j=0;j<dim*dim;j++)
       {
-        *(s+j)=0;
+        *(ns_p+j)=0;
       }
 
-      for(j=0;j<dim*dim;j++)
+      for(sem=0;sem<semm;sem++)
       {
-        *(ns+j)=0;
-      }
+
+        poblar(red, p, dim,sem);
+
+        clasificar(red,dim);
 
 
-
-
-      for(j=0;j<dim*dim;j++) //en la posicion i de s va a estar el tamaño del cluster i
+        for(j=0;j<dim*dim;j++)
         {
-          if(*(red+j))
-          {
-            *(s+*(red+j))+= 1;
-          }
-        }
-
-
-
-        for(j=0;j<dim*dim;j++) //en la posicion i me va a decir cuantos cluster de tamaño i tengo. Aca los seteo a 1 los ocupado y abajo les sumo 1 si se repitan
-        {
-          if(*(s+j))
-          {
-            *(ns+*(s+j)) +=1;
-          }
+          *(s+j)=0;
         }
 
         for(j=0;j<dim*dim;j++)
         {
-          for(k=0;k<dim*dim;k++)
-          {
-            if(*(s+j) & (*(s+j)==*(s+k)))
-            {
-              *(ns+*(s+j)) += 1;
+          *(ns+j)=0;
+        }
+
+        /*for(j=0;j<dim*dim;j++)
+        {
+          *(per+j)=0;
+        }*/
+
+        /*for(k=0;k<dim;k++) //me genero un vector que me va a decir que clusters percolaron
+        { for(j=0;j<dim;j++)
+          { if (*(red+k) == *(red+(dim-1)*dim+j) && *(red+k))
+            { *(per+*(red+k))+=1;
             }
-            break;
+          }
+        }*/
+
+
+        for(j=0;j<dim*dim;j++) //en la posicion i de s va a estar el tamaño del cluster i, pero no va a considerar los que percolaron
+          {
+            if(*(red+j) /*&& !*(per+j)*/)
+            {
+              *(s+*(red+j))+= 1;
+            }
+          }
+
+
+
+          for(j=0;j<dim*dim;j++) //en la posicion i me va a decir cuantos cluster de tamaño i tengo. Aca los seteo a 1 los ocupado y abajo les sumo 1 si se repitan
+          {
+            if(*(s+j))
+            {
+              *(ns+*(s+j)) +=1;
+            }
+          }
+
+          for(j=0;j<dim*dim;j++)
+          {
+            for(k=0;k<dim*dim;k++)
+            {
+              if(*(s+j) & (*(s+j)==*(s+k)))
+              {
+                *(ns+*(s+j)) += 1;
+              }
+              break;
+            }
+          }
+
+          for(j=0;j<dim*dim;j++)
+          {
+            *(ns_p+j)+= *(ns+j);
+          }
+
+
+
+          /*printf("Para probabilidad %f para dimension L= %d , el vector s es = ",p,dim);
+          for(j=0;j<dim*dim;j++)
+          {
+            printf("%d ",*(s+j));
+
+          }
+          printf("Y el vector ns es = ");
+
+          for(j=0;j<dim*dim;j++)
+          {
+            printf("%d ",*(ns+j));
+          }
+
+          printf("\n");
+
+          imprimir(red,dim);
+          printf("%f %d\n",p,dim );*/
+        }
+
+
+
+
+        for(j=0;j<dim*dim;j++)
+        {
+          *(ns_p+j)= *(ns_p+j)/semm;
+        }
+
+        fprintf(n_s,"%f\n",p);
+        //fprintf(text,"s ns\n");
+
+        for(j=0;j<dim*dim;j++)
+        {
+          if(*(ns_p+j))
+          {
+            fprintf(n_s, "%d %f\n",j,*(ns_p+j));
           }
         }
 
-        fprintf(text,"%f\n",p);
-        fprintf(text,"s ns\n");
-        for(j=0;j<dim*dim;j++)
-        {
-          fprintf(text, "%d ,  %d\n",*(s+j),*(ns+j));
-        }
-        fprintf(text,"\n");
-
-        /*printf("Para probabilidad %f para dimension L= %d , el vector s es = ",p,dim);
-        for(j=0;j<dim*dim;j++)
-        {
-          printf("%d ",*(s+j));
-
-        }
-        printf("Y el vector ns es = ");
-
-        for(j=0;j<dim*dim;j++)
-        {
-          printf("%d ",*(ns+j));
+        fprintf(n_s,"\n");
+        p=p+0.05;
         }
 
-        printf("\n");
-
-        imprimir(red,dim);
-        printf("%f %d\n",p,dim );*/
-
-        p=p+0.0005;
-      }
-
-
+        fclose(n_s);
 
     }
 
 
 
 
-  fclose(text);
+
   free(red);
   free(dims);
 
