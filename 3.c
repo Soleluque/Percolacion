@@ -15,7 +15,7 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p,sp=0;
-  int dim, i,j,k,sem,semm=100;
+  int dim, i,j,k,sem,semm=27000;
   int *red,*dims;
 
   char *percolante_n;
