@@ -14,25 +14,15 @@ int imprimir(int *red,int dim);
 
 //Función principal:
 int main(int argc,char*argv[])
-{ float p;
+{ float p, sp=0;
   int i, j, k, dim, sem, semm=27000;
-  int *red, *s, *ns, *dims; //*per;
-  float  *p_c;
-  double *ns_p;
-  char *n_sn;
-  FILE *n_s;
+  int *red, *s, *dims, *per;
+  char *percn;
+  FILE *perc;
 
 
-  p_c = malloc(6*sizeof(float));
   dims = malloc(6*sizeof(int));
-  n_sn = malloc(sizeof("n_s128.txt"));
-
-  *(p_c) = 0.5630;
-  *(p_c+1) = 0.5813;
-  *(p_c+2) = 0.5878;
-  *(p_c+3) = 0.5932;
-  *(p_c+4) = 0.5922;
-  *(p_c+5) = 0.5927;
+  percn = malloc(sizeof("perc_128.txt"));
 
   *(dims) = 4;
   *(dims+1) = 8;
@@ -42,99 +32,70 @@ int main(int argc,char*argv[])
   *(dims+5) = 128;
 
   for(i=0;i<6;i++)
-  {sprintf(n_sn, "n_s%i",*(dims+i));
-   n_s = fopen(n_sn, "w");
+  {sprintf(percn, "perc_%i",*(dims+i));
+   perc = fopen(percn, "w");
 
-   p = *(p_c+i) - 0.1;
-    dim = *(dims+i);
+   dim = *(dims+i);
 
-    red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
-    s = malloc((dim*dim)*sizeof(int));
-    ns = malloc((dim*dim)*sizeof(int));
-    ns_p = malloc(dim*dim*sizeof(double));
-    //per = malloc(dim*dim*sizeof(int));
+   red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
+   s = malloc((dim*dim)*sizeof(int));
+   per = malloc(dim*sizeof(int));
 
-    fprintf(n_s, "%i\n", dim);
+    //fprintf(perc, "%i\n", dim);
 
-    while(p<=*(p_c+i)+0.1)
-    { for(j=0;j<dim*dim;j++)
-      { *(ns_p+j) = 0;
+    p = 0;
+
+   while(p<=1)
+    { for(j=0;j<dim;j++)
+      { *(per+j) = 0;
       }
 
       for(sem=0; sem<semm; sem++)
       { poblar(red, p, dim,sem);
         clasificar(red,dim);
 
-        /*for(j=0;j<dim*dim;j++)
-        { *(per+j) = 0;
-        }*/
-
         for(j=0;j<dim*dim;j++)
         { *(s+j) = 0;
         }
 
-        for(j=0;j<dim*dim;j++)
-        { *(ns+j) = 0;
-        }
-
-        /*for(j=0;j<dim;j++)
+        for(j=0;j<dim;j++)
         { for(k=0;k<dim;k++)
           { if (*(red+j) == *(red+(dim-1)*dim+k) && *(red+j))
             { *(per+*(red+j)) += 1;
             }
           }
-        }*/
+        }
 
         for(j=0; j<dim*dim; j++)
-        { if(*(red+j))// && !*(per+j))
+        { if(*(red+j))
           { *(s+*(red+j)) += 1;
           }
         }
 
-        for(j=0; j<dim*dim; j++)
-        { if(*(s+j))
-          { *(ns+*(s+j)) += 1;
+        for(j=0; j<dim; j++)
+        { if(*(per+j))
+          { sp += *(s+j);
           }
         }
-
-        for(j=0; j<dim*dim; j++)
-        { for(k=0; k<dim*dim; k++)
-          { if(*(s+j) == *(s+k) && *(s+j))
-            { *(ns+*(s+j)) += 1;
-            }
-          break;
-          }
-        }
-
-        for(j=0; j<dim*dim; j++)
-        { *(ns_p+j) += *(ns+j);
-        }
       }
 
-      for(j=0; j<dim*dim; j++)
-      { *(ns_p+j) /= semm;
-      }
+      sp /= semm;    //Promedio de tamaño percolante.
 
-      fprintf(n_s, "%0.4f\n", p);
+      sp /= dim*dim;     //Intensidad Cluster Percolante.
 
-      for(j=0; j<dim*dim; j++)
-      { if(*(ns_p+j))
-        { fprintf(n_s, "%i %f\n", j, *(ns_p+j));
-        }
-      }
+      fprintf(perc, "%0.4f ", p);
+      fprintf(perc, "%f", sp);
+      fprintf(perc, "\n");
 
-      fprintf(n_s, "\n");
-
-      p += 0.05;
+      p += 0.0005;
 
     }
-   fclose(n_s);
+   fclose(perc);
   }
 
-  free(ns);
+  free(per);
   free(s);
   free(dims);
-  //free(per);
   free(red);
 
   return 0;
