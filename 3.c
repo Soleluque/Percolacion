@@ -15,7 +15,7 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p, sp=0;
-  int i, j, k, dim, sem, semm=100;
+  int i, j, k, dim, sem, semm=27000;
   int *red, *s, *dims, *per;
   float *p_c;
   FILE *perc;
