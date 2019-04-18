@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 int poblar (int *red, float p, int dim, int sem);
 int etiqueta_verdadera(int *historial, int s);
@@ -14,14 +15,17 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p;
-  int i, j, k, dim, sem = 0;
-  int *red, *s, *ns, *dims;
+  int i, j, k, dim, sem, semm=10;
+  int *red, *s, *ns, *dims; //*per;
   float  *p_c;
+  double *ns_p;
+  char *n_sn;
   FILE *n_s;
+
 
   p_c = malloc(6*sizeof(float));
   dims = malloc(6*sizeof(int));
-  n_s = fopen("n_s.txt", "w");
+  n_sn = malloc(sizeof("n_s128.txt"));
 
   *(p_c) = 0.5630;
   *(p_c+1) = 0.5813;
@@ -38,65 +42,99 @@ int main(int argc,char*argv[])
   *(dims+5) = 128;
 
   for(i=0;i<6;i++)
-  { p = *(p_c+i) - 0.1;
+  {sprintf(n_sn, "n_s%i",*(dims+i));
+   n_s = fopen(n_sn, "w");
+
+   p = *(p_c+i) - 0.1;
     dim = *(dims+i);
 
     red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
     s = malloc((dim*dim)*sizeof(int));
     ns = malloc((dim*dim)*sizeof(int));
+    ns_p = malloc(dim*dim*sizeof(double));
+    //per = malloc(dim*dim*sizeof(int));
 
-    fprintf(n_s, "Dimensión = %i\n", dim);
+    fprintf(n_s, "%i\n", dim);
 
     while(p<=*(p_c+i)+0.1)
-    { poblar(red, p, dim,sem);
-      clasificar(red,dim);
-
-      for(j=0;j<dim*dim;j++)
-      { *(s+j) = 0;
+    { for(j=0;j<dim*dim;j++)
+      { *(ns_p+j) = 0;
       }
 
-      for(j=0;j<dim*dim;j++)
-      { *(ns+j) = 0;
-      }
+      for(sem=0; sem<semm; sem++)
+      { poblar(red, p, dim,sem);
+        clasificar(red,dim);
 
-      for(j=0; j<dim*dim; j++)
-        { if(*(red+j))
+        /*for(j=0;j<dim*dim;j++)
+        { *(per+j) = 0;
+        }*/
+
+        for(j=0;j<dim*dim;j++)
+        { *(s+j) = 0;
+        }
+
+        for(j=0;j<dim*dim;j++)
+        { *(ns+j) = 0;
+        }
+
+        /*for(j=0;j<dim;j++)
+        { for(k=0;k<dim;k++)
+          { if (*(red+j) == *(red+(dim-1)*dim+k) && *(red+j))
+            { *(per+*(red+j)) += 1;
+            }
+          }
+        }*/
+
+        for(j=0; j<dim*dim; j++)
+        { if(*(red+j))// && !*(per+j))
           { *(s+*(red+j)) += 1;
           }
         }
 
-      for(j=0; j<dim*dim; j++)
-      { if(*(s+j))
-        { *(ns+*(s+j)) += 1;
-        }
-      }
-
-      for(j=0; j<dim*dim; j++)
-      { for(k=0; k<dim*dim; k++)
-        { if(*(s+j) == *(s+k) && *(s+j))
+        for(j=0; j<dim*dim; j++)
+        { if(*(s+j))
           { *(ns+*(s+j)) += 1;
           }
+        }
+
+        for(j=0; j<dim*dim; j++)
+        { for(k=0; k<dim*dim; k++)
+          { if(*(s+j) == *(s+k) && *(s+j))
+            { *(ns+*(s+j)) += 1;
+            }
           break;
+          }
+        }
+
+        for(j=0; j<dim*dim; j++)
+        { *(ns_p+j) += *(ns+j);
         }
       }
 
-      fprintf(n_s, "Probabilidad = %f\n", p);
-      fprintf(n_s, "s n_s\n");
       for(j=0; j<dim*dim; j++)
-      { fprintf(n_s, "%i %i\n", *(s+j), *(ns+j));
+      { *(ns_p+j) /= semm;
       }
+
+      fprintf(n_s, "%0.4f\n", p);
+
+      for(j=0; j<dim*dim; j++)
+      { if(*(ns_p+j))
+        { fprintf(n_s, "%i %f\n", j, *(ns_p+j));
+        }
+      }
+
       fprintf(n_s, "\n");
 
-      p += 0.0005;
+      p += 0.05;
 
     }
-
+   fclose(n_s);
   }
 
-  fclose(n_s);
   free(ns);
   free(s);
   free(dims);
+  //free(per);
   free(red);
 
   return 0;
