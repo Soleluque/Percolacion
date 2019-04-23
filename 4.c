@@ -15,7 +15,7 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p;
-  int i, j, k, t, dim, sem, semm=27000;
+  int i, j, k, t, dim, sem, semm=200;
   int *red, *s, *ns, *dims;
   float  *p_c;
   double *ns_p;
@@ -96,7 +96,7 @@ int main(int argc,char*argv[])
       }
 
       for(j=41; j<493; j++)
-      { *(ns_p+j) /= (semm*pow(*(s+j),-1.8309));
+      { *(ns_p+j) /= (semm*pow(*(s+j),-1.6527));
       }
 
 
