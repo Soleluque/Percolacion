@@ -52,7 +52,6 @@ int main(int argc,char*argv[])
     s = malloc((dim*dim)*sizeof(int));
     ns = malloc((dim*dim)*sizeof(int));
     ns_p = malloc(dim*dim*sizeof(double));
-    //per = malloc(dim*dim*sizeof(int));
 
     fprintf(n_s, "%i\n", dim);
 
@@ -65,9 +64,6 @@ int main(int argc,char*argv[])
       { poblar(red, p, dim,sem);
         clasificar(red,dim);
 
-        /*for(j=0;j<dim*dim;j++)
-        { *(per+j) = 0;
-        }*/
 
         for(j=0;j<dim*dim;j++)
         { *(s+j) = 0;
@@ -76,14 +72,6 @@ int main(int argc,char*argv[])
         for(j=0;j<dim*dim;j++)
         { *(ns+j) = 0;
         }
-
-        /*for(j=0;j<dim;j++)
-        { for(k=0;k<dim;k++)
-          { if (*(red+j) == *(red+(dim-1)*dim+k) && *(red+j))
-            { *(per+*(red+j)) += 1;
-            }
-          }
-        }*/
 
         for(j=0; j<dim*dim; j++)
         { if(*(red+j))// && !*(per+j))
