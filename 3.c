@@ -123,7 +123,18 @@ for(i=0;i<6;i++)
           if(*(per+j))
           {
             sp+=*(s+j);
-            contador=contador+1;
+
+          }
+
+        }
+
+        for(j=0;j<dim;j++) //me va a dar el tamaño del cluster que percolo
+        {
+          if(*(per+j))
+          {
+            contador+=1;
+            break;
+
           }
 
         }
