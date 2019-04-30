@@ -15,10 +15,10 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p;
-  int i, j, k, t, dim, sem, semm=27000;
+  int i, j, k, t, dim, sem, semm=5000;
   int *red, *s, *ns, *dims;
-  float  *p_c;
-  double *ns_p;
+  float  *p_c,*q0,*pmax,*nspviejo;
+  double *ns_p, *s_p;
   char *n_sn;
   FILE *n_s;
 
@@ -26,6 +26,9 @@ int main(int argc,char*argv[])
   p_c = malloc(6*sizeof(float));
   dims = malloc(6*sizeof(int));
   n_sn = malloc(sizeof("scaling_000.txt"));
+  pmax=malloc(36*sizeof(float));
+  nspviejo=malloc(36*sizeof(double));
+
 
   *(p_c) = 0.5630;
   *(p_c+1) = 0.5813;
@@ -41,29 +44,46 @@ int main(int argc,char*argv[])
   *(dims+4) = 64;
   *(dims+5) = 128;
 
+  for(j=0;j<35;j++)
+    { *(pmax+j) = 0;
+    }
+
+    for(j=0;j<35;j++)
+      { *(nspviejo+j) = 0;
+      }
+
+
+
+
+
+
   for(i=4;i<5;i++)
-  { p = 0.01;
+  { p = *(p_c+i);
     dim = *(dims+i);
 
     red = malloc(dim*dim*sizeof(int));    //Reserva el espacio necesario para la red.
     s = malloc((dim*dim)*sizeof(int));
+    s_p= malloc((dim*dim)*sizeof(double));
     ns = malloc((dim*dim)*sizeof(int));
     ns_p = malloc(dim*dim*sizeof(double));
+    q0=malloc(dim*dim*sizeof(float));
 
-
-    while(p<=1)
-    { for(j=0;j<dim*dim;j++)
+    for(j=0;j<dim*dim;j++)
       { *(ns_p+j) = 0;
       }
+
+
 
       for(sem=0; sem<semm; sem++)
       { poblar(red, p, dim,sem);
         clasificar(red,dim);
 
 
-        for(j=0;j<dim*dim;j++)
+      for(j=0;j<dim*dim;j++)
         { *(s+j) = 0;
         }
+
+
 
         for(j=0;j<dim*dim;j++)
         { *(ns+j) = 0;
@@ -75,14 +95,14 @@ int main(int argc,char*argv[])
           }
         }
 
-        for(j=41; j<492; j++)
+        for(j=0; j<dim*dim; j++)
         { if(*(s+j))
           { *(ns+*(s+j)) += 1;
           }
         }
 
-        for(j=41; j<492; j++)
-        { for(k=41; k<492; k++)
+        for(j=0; j<dim; j++)
+        { for(k=0; k<dim; k++)
           { if(*(s+j) == *(s+k) && *(s+j))
             { *(ns+*(s+j)) += 1;
             }
@@ -93,13 +113,126 @@ int main(int argc,char*argv[])
         for(j=0; j<dim*dim; j++)
         { *(ns_p+j) += *(ns+j);
         }
+
+
+
       }
 
-      for(j=41; j<493; j++)
-      { *(ns_p+j) /= (semm*pow(*(s+j),-1.8309));
+
+      for(j=0;j<dim*dim;j++)
+      {
+       *(q0+j)=*(ns_p+j)/semm; //esto es el ns en (pc)
+     }
+
+     /*for(j=0;j<dim*dim;j++)
+     { if(*(q0+j))
+       {
+       printf("%f\n",*(q0+j));
+      }
+    }*/
+
+    /*for(j=10;j<35;j++)
+    {
+      printf("%f ",*(q0+j));
+    }*/
+
+
+
+    p=0.01;
+
+    while(p<=1)
+    { for(j=0;j<dim*dim;j++)
+      { *(ns_p+j) = 0;
       }
 
-      for(t=41;t<493;t++)
+      for(j=0;j<dim*dim;j++)
+      { *(s_p+j) = 0;
+      }
+
+      for(sem=0; sem<semm; sem++)
+      { poblar(red, p, dim,sem);
+        clasificar(red,dim);
+
+
+        for(j=0;j<dim*dim;j++)
+        { *(s+j) = 0;
+        }
+
+
+
+        for(j=0;j<dim*dim;j++)
+        { *(ns+j) = 0;
+        }
+
+        for(j=0; j<dim*dim; j++)
+        { if(*(red+j))
+          { *(s+*(red+j)) += 1;
+          }
+        }
+
+        for(j=0; j<dim*dim; j++)
+        { if(*(s+j))
+          { *(ns+*(s+j)) += 1;
+          }
+        }
+
+        for(j=0; j<dim; j++)
+        { for(k=0; k<dim; k++)
+          { if(*(s+j) == *(s+k) && *(s+j))
+            { *(ns+*(s+j)) += 1;
+            }
+          break;
+          }
+        }
+
+        for(j=0; j<dim*dim; j++)
+        { *(ns_p+j) += *(ns+j);
+        }
+
+        for(j=0;j<dim*dim;j++)
+        {
+          *(s_p+j) += *(s+j);
+        }
+
+      }
+
+      for(j=0;j<dim*dim;j++)
+      {
+        *(s_p+j) /=semm;
+      }
+
+      /*for(j=0;j<dim*dim;j++)
+      {
+        printf("%f ",*(q0+j));
+      }*/
+
+
+
+      for(j=0; j<dim*dim; j++)
+      { //if(*(s+j)!=0)
+        //if(*(q0+j))
+        *(ns_p+j) /=semm;
+
+        *(ns_p+j) /= *(q0+j);
+
+
+
+      }
+
+      for(j=10;j<35;j++)
+      {
+        if(*(ns_p+j)>=*(nspviejo+j))
+        {
+          *(pmax+j)=p;
+        }
+      }
+
+      for(j=10;j<=35;j++)
+      {
+        *(nspviejo+j)=*(ns_p+j);
+      }
+
+      for(t=10;t<35;t++)
       { sprintf(n_sn, "scaling_%i",t);
         n_s = fopen(n_sn, "a");
         fprintf(n_s,"%f %f\n", p, *(ns_p+t));
@@ -109,13 +242,31 @@ int main(int argc,char*argv[])
       p += 0.01;
 
     }
+    for(j=10;j<35;j++)
+    {
+      *(pmax+j)=*(pmax+j)-pc;
+    }
+
+    for(t=10;t<35;t++)
+    { sprintf(n_sn, "scaling_%i",t);
+      n_s = fopen(n_sn, "a");
+      fprintf(n_s,"%f\n ", *(pmax+t));
+      fclose(n_s);
+    }
+
+
   }
 
   free(ns);
+  free(ns_p);
   free(s);
+  free(n_sn);
   free(dims);
-  //free(per);
   free(red);
+  free(p_c);
+  free(q0);
+  free(pmax);
+  free(nspviejo);
 
   return 0;
 }
