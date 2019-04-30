@@ -15,7 +15,7 @@ int imprimir(int *red,int dim);
 //Función principal:
 int main(int argc,char*argv[])
 { float p,sp=0;
-  int dim, i,j,k,sem,semm=27000;
+  int dim, i,j,k,sem,semm=1000,contador;
   int *red,*dims;
 
   char *percolante_n;
@@ -75,6 +75,8 @@ for(i=0;i<6;i++)
 
     per=malloc(dim*sizeof(int));
     sem=0;
+    contador=0;
+
 
 
     for(j=0;j<dim;j++)
@@ -121,6 +123,7 @@ for(i=0;i<6;i++)
           if(*(per+j))
           {
             sp+=*(s+j);
+            contador=contador+1;
           }
 
         }
@@ -128,10 +131,10 @@ for(i=0;i<6;i++)
 
       }
 
-        sp/=semm; //promedio de tamaño de cluster percolante
+        sp/=contador; //promedio de tamaño de cluster percolante
 
 
-
+        printf("%i\n",contador);
 
 
         fprintf(percolante,"%d ",dim);
