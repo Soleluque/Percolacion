@@ -34,7 +34,7 @@ int main(int argc,char*argv[])
   *(p_c+1) = 0.5813;
   *(p_c+2) = 0.5878;
   *(p_c+3) = 0.5932;
-  *(p_c+4) = 0.5922;
+  *(p_c+4) = 0.59;
   *(p_c+5) = 0.5927;
 
   *(dims) = 4;
@@ -101,14 +101,7 @@ int main(int argc,char*argv[])
           }
         }
 
-        for(j=0; j<dim; j++)
-        { for(k=0; k<dim; k++)
-          { if(*(s+j) == *(s+k) && *(s+j))
-            { *(ns+*(s+j)) += 1;
-            }
-          break;
-          }
-        }
+
 
         for(j=0; j<dim*dim; j++)
         { *(ns_p+j) += *(ns+j);
@@ -131,10 +124,7 @@ int main(int argc,char*argv[])
       }
     }*/
 
-    /*for(j=10;j<35;j++)
-    {
-      printf("%f ",*(q0+j));
-    }*/
+
 
 
 
@@ -176,14 +166,7 @@ int main(int argc,char*argv[])
           }
         }
 
-        for(j=0; j<dim; j++)
-        { for(k=0; k<dim; k++)
-          { if(*(s+j) == *(s+k) && *(s+j))
-            { *(ns+*(s+j)) += 1;
-            }
-          break;
-          }
-        }
+
 
         for(j=0; j<dim*dim; j++)
         { *(ns_p+j) += *(ns+j);
@@ -239,22 +222,33 @@ int main(int argc,char*argv[])
         fclose(n_s);
       }
 
+      if(p==*(p_c+4))
+      { for(t=0;t<35;t++)
+        {
+        printf("%f\n",*(ns_p+t));
+        }
+      }
       p += 0.01;
 
     }
     for(j=10;j<35;j++)
     {
-      *(pmax+j)=*(pmax+j)-pc;
+      *(pmax+j)=*(pmax+j)-*(p_c+i);
     }
 
     for(t=10;t<35;t++)
     { sprintf(n_sn, "scaling_%i",t);
       n_s = fopen(n_sn, "a");
-      fprintf(n_s,"%f\n ", *(pmax+t));
+      fprintf(n_s,"%f", *(pmax+t));
       fclose(n_s);
     }
 
 
+  }
+
+  for(j=10;j<35;j++)
+  {
+    printf("%f ",*(q0+j));
   }
 
   free(ns);
